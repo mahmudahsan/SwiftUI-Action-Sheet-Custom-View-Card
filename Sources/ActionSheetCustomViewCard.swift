@@ -105,9 +105,6 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
             .cornerRadius(10)
             .offset(y: offset)
             .gesture(interactiveGesture)
-            .onTapGesture {
-                hide()
-            }
         }
     }
     
