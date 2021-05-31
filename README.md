@@ -210,4 +210,4 @@ var body: some View {
 
 - Feel free to [open an issue](https://github.com/mahmudahsan/SwiftUI-Action-Sheet-Custom-View-Card/issues/new)
 - Find me [@mahmudahsan on Twitter](https://twitter.com/mahmudahsan)
-- Read programming articles on [Level Up Programming](https://thinkdiff.net)
+- Read programming articles on [Thinkdiff.net](https://thinkdiff.net)
