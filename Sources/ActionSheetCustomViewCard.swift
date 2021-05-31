@@ -27,6 +27,11 @@ import Combine
 
 public struct ActionSheetCustomViewCard<Content: View>: View {
     @State var offset = UIScreen.main.bounds.height
+    
+    @State var isDragging = false
+    @State var startDragPosY: CGFloat = 0.0
+    @State var endDragPosY: CGFloat = 0.0
+    
     @Binding var isShowing: Bool
     
     let content: Content
@@ -34,22 +39,29 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
     let cellHeight: CGFloat = 50
     let backgroundColor: Color
     let outOfFocusOpacity: CGFloat
+    let minimumDragDistanceToHide: CGFloat
     
     public init(
         @ViewBuilder content: ()->Content,
         isShowing: Binding<Bool>,
         backgroundColor: Color = Color.white,
-        outOfFocusOpacity: CGFloat = 0.7
+        outOfFocusOpacity: CGFloat = 0.7,
+        minimumDragDistanceToHide: CGFloat = 150
     ) {
         self.content = content()
         _isShowing = isShowing
         self.backgroundColor = backgroundColor
         self.outOfFocusOpacity = outOfFocusOpacity
+        self.minimumDragDistanceToHide = minimumDragDistanceToHide
     }
     
     func hide() {
         offset = heightToDisappear
+        isDragging = false
         isShowing = false
+        
+        startDragPosY = 0.0
+        endDragPosY = 0.0
     }
         
     var topHalfMiddleBar: some View {
@@ -60,21 +72,33 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
             .opacity(0.2)
     }
     
+    func checkHideConditions() {
+        let diff = abs(startDragPosY - endDragPosY)
+        if diff > 100 {
+            hide()
+        }
+    }
+    
+    func dragGestureOnChange(_ value: DragGesture.Value) {
+        isDragging = true
+        if startDragPosY == 0.0 {
+            startDragPosY = value.location.y
+        }
+        
+        if value.translation.height > 0 {
+            offset = value.location.y
+            endDragPosY = offset
+            checkHideConditions()
+        }
+    }
+    
     var interactiveGesture: some Gesture {
         DragGesture()
             .onChanged({ (value) in
-                if value.translation.height > 0 {
-                    offset = value.location.y
-                }
+                dragGestureOnChange(value)
             })
             .onEnded({ (value) in
-                let diff = abs(offset-value.location.y)
-                if diff > 100 {
-                    hide()
-                }
-                else {
-                    offset = 0
-                }
+                isDragging = false
             })
     }
     
@@ -115,6 +139,16 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
         }
     }
     
+    func onUpdateIsShowing(_ isShowing: Bool) {
+        if isShowing && isDragging {
+            return
+        }
+        
+        DispatchQueue.main.async {
+            offset = isShowing ? 0 : heightToDisappear
+        }
+    }
+    
     public var body: some View {
         Group {
             if isShowing {
@@ -123,9 +157,7 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
         }
         .animation(.default)
         .onReceive(Just(isShowing), perform: { isShowing in
-            DispatchQueue.main.async {
-                offset = isShowing ? 0 : heightToDisappear
-            }
+            onUpdateIsShowing(isShowing)
         })
     }
 }
