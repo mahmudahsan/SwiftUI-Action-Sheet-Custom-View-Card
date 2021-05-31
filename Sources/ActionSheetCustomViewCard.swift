@@ -66,13 +66,19 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
             .opacity(0.2)
     }
     
+    
     func dragGestureOnChange(_ value: DragGesture.Value) {
         isDragging = true
-        
+        print("start Y: \(value.startLocation.y) | end Y: \(value.location.y) | translation: \(value.translation.height)")
         if value.translation.height > 0 {
             offset = value.location.y
             let diff = abs(value.location.y - value.startLocation.y)
-            if diff > minimumDragDistanceToHide {
+            
+            let conditionOne = diff > minimumDragDistanceToHide
+            let conditionTwo = value.location.y >= 200
+            
+            
+            if conditionOne || conditionTwo {
                 hide()
             }
         }
