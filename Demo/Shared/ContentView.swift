@@ -74,7 +74,8 @@ struct ContentView: View {
             
         },
             isShowing: $showingSheet,
-            outOfFocusOpacity: 0.2
+            outOfFocusOpacity: 0.2,
+            showFullScreen: false
         )
     }
     
