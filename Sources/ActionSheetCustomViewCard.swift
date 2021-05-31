@@ -27,10 +27,7 @@ import Combine
 
 public struct ActionSheetCustomViewCard<Content: View>: View {
     @State var offset = UIScreen.main.bounds.height
-    
     @State var isDragging = false
-    @State var startDragPosY: CGFloat = 0.0
-    @State var endDragPosY: CGFloat = 0.0
     
     @Binding var isShowing: Bool
     
@@ -59,9 +56,6 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
         offset = heightToDisappear
         isDragging = false
         isShowing = false
-        
-        startDragPosY = 0.0
-        endDragPosY = 0.0
     }
         
     var topHalfMiddleBar: some View {
@@ -72,23 +66,15 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
             .opacity(0.2)
     }
     
-    func checkHideConditions() {
-        let diff = abs(startDragPosY - endDragPosY)
-        if diff > 100 {
-            hide()
-        }
-    }
-    
     func dragGestureOnChange(_ value: DragGesture.Value) {
         isDragging = true
-        if startDragPosY == 0.0 {
-            startDragPosY = value.location.y
-        }
         
         if value.translation.height > 0 {
             offset = value.location.y
-            endDragPosY = offset
-            checkHideConditions()
+            let diff = abs(value.location.y - value.startLocation.y)
+            if diff > minimumDragDistanceToHide {
+                hide()
+            }
         }
     }
     
