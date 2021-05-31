@@ -37,19 +37,24 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
     let backgroundColor: Color
     let outOfFocusOpacity: CGFloat
     let minimumDragDistanceToHide: CGFloat
+    let showFullScreen: Bool
     
     public init(
         @ViewBuilder content: ()->Content,
         isShowing: Binding<Bool>,
         backgroundColor: Color = Color.white,
         outOfFocusOpacity: CGFloat = 0.7,
-        minimumDragDistanceToHide: CGFloat = 150
+        minimumDragDistanceToHide: CGFloat = 150,
+        showFullScreen: Bool = false
     ) {
         self.content = content()
         _isShowing = isShowing
         self.backgroundColor = backgroundColor
         self.outOfFocusOpacity = outOfFocusOpacity
         self.minimumDragDistanceToHide = minimumDragDistanceToHide
+        self.showFullScreen = showFullScreen
+        
+        print(showFullScreen)
     }
     
     func hide() {
@@ -109,12 +114,18 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
     
     var sheetView: some View {
         VStack {
-            Spacer()
+            if !showFullScreen {
+                Spacer()
+            }
             
             VStack (spacing: 14){
                 topHalfMiddleBar
                 customView
                 Text("").frame(height: 20) // empty space
+                
+                if showFullScreen {
+                    Spacer()
+                }
             }
             .background(backgroundColor)
             .cornerRadius(10)
@@ -150,6 +161,7 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
         .onReceive(Just(isShowing), perform: { isShowing in
             onUpdateIsShowing(isShowing)
         })
+        .edgesIgnoringSafeArea(.all)
     }
 }
 
