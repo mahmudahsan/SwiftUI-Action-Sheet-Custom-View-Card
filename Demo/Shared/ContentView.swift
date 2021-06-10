@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    @State var showingSheet = false
+struct Home: View {
+    @Binding var showingSheet: Bool
     
-    var content: some View {
+    var body: some View {
         VStack {
             Text("Custom Info Sheet")
                 .font(.largeTitle)
@@ -22,6 +22,26 @@ struct ContentView: View {
             }
         }
         .edgesIgnoringSafeArea(.all)
+    }
+}
+
+struct ContentView: View {
+    @State var showingSheet = false
+    @State var selectedTab: Int = 0
+    
+    var content: some View {
+        NavigationView {
+            TabView(selection: $selectedTab) {
+                Home(showingSheet: $showingSheet)
+                    .tabItem({
+                        Text("Home")
+                    })
+                    .tag("Home")
+                
+                
+            }
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     func hideActionSheet() {
@@ -81,7 +101,6 @@ struct ContentView: View {
     
     var sheetView: some View {
         VStack {
-            Spacer()
             actionSheet
         }
     }

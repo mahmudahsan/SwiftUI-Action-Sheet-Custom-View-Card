@@ -38,13 +38,12 @@ public struct GreyOutOfFocusView: View {
     
     var greyView: some View {
         Rectangle()
-            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
             .background(Color.gray)
             .opacity(Double(opacity))
             .onTapGesture {
                 callback?()
             }
-            .ignoresSafeArea()
+            .edgesIgnoringSafeArea(.all)
     }
     
     public var body: some View {
