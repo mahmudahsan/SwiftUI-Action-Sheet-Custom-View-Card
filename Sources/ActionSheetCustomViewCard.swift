@@ -53,8 +53,6 @@ public struct ActionSheetCustomViewCard<Content: View>: View {
         self.outOfFocusOpacity = outOfFocusOpacity
         self.minimumDragDistanceToHide = minimumDragDistanceToHide
         self.showFullScreen = showFullScreen
-        
-        print(showFullScreen)
     }
     
     func hide() {
